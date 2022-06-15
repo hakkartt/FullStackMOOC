@@ -38,6 +38,15 @@ const App = () => {
             setNotification(null)
           }, 5000)
         })
+        .catch(error => {
+          setErrorMsg(
+            `When creating/updating a phonebook contact, the name must be at least 3 characters long and the number must be in format xx-xxxxx... or xxx-xxxx...`+
+            `\n\nReceived the following error message: ${error.response.data.error}`
+          )
+          setTimeout(() => {
+            setErrorMsg(null)
+          }, 30000)
+        })
     } else {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         const person = persons.find(n => n.name === newName)
@@ -54,11 +63,12 @@ const App = () => {
           })
           .catch(error => {
             setErrorMsg(
-              `Information of ${person.name} has already been removed from server`
+              `When creating/updating a phonebook contact, the name must be at least 3 characters long and the number must be in format of xx-xxxxx... or xxx-xxxx...`+
+              `\n\nReceived th following error message: ${error.response.data.error}`
             )
             setTimeout(() => {
               setErrorMsg(null)
-            }, 5000)
+            }, 30000)
           })
       }
     }
