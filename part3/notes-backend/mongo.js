@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 
 if (process.argv.length<3) {
@@ -8,7 +9,7 @@ if (process.argv.length<3) {
 const password = process.argv[2]
 
 const url =
-  `mongodb+srv://arttu:${password}@cluster0.gg4ji.mongodb.net/noteApp?retryWrites=true&w=majority`
+  `mongodb+srv://fullstack:${password}@cluster0.o1opl.mongodb.net/noteApp?retryWrites=true&w=majority`
 
 mongoose.connect(url)
 
@@ -21,16 +22,17 @@ const noteSchema = new mongoose.Schema({
 const Note = mongoose.model('Note', noteSchema)
 
 const note = new Note({
-  content: 'JS is Easy',
+  content: 'CSS is hard',
   date: new Date(),
-  important: true,
+  important: false,
 })
 
-note.save().then(() => {
-  console.log('note saved!')
-  mongoose.connection.close()
-})
-
+if ( false ) {
+  note.save().then(() => {
+    console.log('note saved!')
+    mongoose.connection.close()
+  })
+}
 
 Note.find({}).then(result => {
   result.forEach(note => {

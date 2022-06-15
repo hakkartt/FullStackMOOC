@@ -13,8 +13,11 @@ const requestLogger = (request, response, next) => {
 }
 
 app.use(express.json())
+
 app.use(requestLogger)
+
 app.use(cors())
+
 app.use(express.static('build'))
 
 app.get('/', (req, res) => {
@@ -23,14 +26,13 @@ app.get('/', (req, res) => {
 
 app.post('/api/notes', (request, response, next) => {
   const body = request.body
-  if (body.content === undefined) {
-    return response.status(400).json({ error: 'content missing' })
-  }
+
   const note = new Note({
     content: body.content,
     important: body.important || false,
     date: new Date(),
   })
+
   note.save()
     .then(savedNote => {
       response.json(savedNote)
@@ -68,9 +70,11 @@ app.get('/api/notes/:id', (request, response, next) => {
 
 app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
-  Note.findByIdAndUpdate(
-    request.params.id,
-    { content, important },    { new: true, runValidators: true, context: 'query' }  )
+
+  Note.findByIdAndUpdate(request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: 'query' }
+  )
     .then(updatedNote => {
       response.json(updatedNote)
     })
@@ -88,14 +92,16 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {    return response.status(400).json({ error: error.message })  }
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
 
 app.use(errorHandler)
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
