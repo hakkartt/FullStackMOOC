@@ -69,7 +69,7 @@ test('dummy returns one', () => {
   expect(result).toBe(1)
 })
 
-describe('total likes', () => {
+describe('Total likes', () => {
 
   test('when list has only one blog equals the likes of that', () => {
     const result = listHelper.totalLikes(listWithOneBlog)
@@ -83,14 +83,14 @@ describe('total likes', () => {
 
 })
 
-describe('most likes', () => {
+describe('Most likes', () => {
 
-  test('of empty list is handled correctly', () => {
+  test('when empty list', () => {
     const result = listHelper.favoriteBlog([])
     expect(result).toEqual({})
   })
 
-  test('of list with one blogs works', () => {
+  test('when list with one blog', () => {
     const result = listHelper.favoriteBlog(listWithOneBlog)
     expect(result).toEqual(
       {
@@ -101,13 +101,41 @@ describe('most likes', () => {
     )
   })
 
-  test('of list with many blogs works', () => {
+  test('when list with multiple blogs', () => {
     const result = listHelper.favoriteBlog(blogs)
     expect(result).toEqual(
       {
         title:'Canonical string reduction',
         author: 'Edsger W. Dijkstra',
         likes: 12
+      }
+    )
+  })
+})
+
+describe('Most blogs', () => {
+
+  test('when empty list', () => {
+    const result = listHelper.mostBlogs([])
+    expect(result).toEqual({})
+  })
+
+  test('when list with one blog', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    expect(result).toEqual(
+      {
+        author: 'Edsger W. Dijkstra',
+        blogs: 1
+      }
+    )
+  })
+
+  test('when list with multiple blogs', () => {
+    const result = listHelper.mostBlogs(blogs)
+    expect(result).toEqual(
+      {
+        author: 'Robert C. Martin',
+        blogs: 3
       }
     )
   })
