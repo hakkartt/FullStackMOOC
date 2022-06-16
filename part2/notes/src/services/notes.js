@@ -3,6 +3,7 @@ const baseUrl = '/api/notes'
 
 const getAll = () => {
   const request = axios.get(baseUrl)
+
   return request.then(response => response.data)
 }
 
@@ -16,6 +17,6 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-const ex = { getAll, create, update }
+const exp = { getAll, create, update }
 
-export default ex
+export default exp
