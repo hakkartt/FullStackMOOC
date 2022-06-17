@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+// get the correct token by sending login.rest request first
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2MmFjNWVlNzM4NDRjOTA0MzU1YmI4MmMiLCJpYXQiOjE2NTU0NjU3MzV9.s0dOjjQANUUjdp4gXVgnnpAAWCcProZ97uW44yQYCrs
+
+{
+    "content": "auth heee",
+    "important": true
+}
