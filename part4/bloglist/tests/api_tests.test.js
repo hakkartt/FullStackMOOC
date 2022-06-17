@@ -29,6 +29,14 @@ describe('save some initial notes to DB', () => {
       response.body.map(blog => expect(blog.id).toBeDefined())
     })
 
+    test('get a single blog with valid "id"', async () => {
+      const blogs = await helper.blogsInDb()
+      await api
+        .get(`/api/blogs/${blogs[0].id}`)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+    })
+
   })
 
   describe('test POST requests', () => {
@@ -124,6 +132,23 @@ describe('save some initial notes to DB', () => {
       const blogsAfterDelete = await helper.blogsInDb()
       expect(blogsAfterDelete)
         .toHaveLength(blogsBeforeDelete.length)
+    })
+
+  })
+
+  describe('test PUT requests', () => {
+
+    test('adding likes to a existing blog', async () => {
+      const likesToBeAdded = 5
+      const blogs = await helper.blogsInDb()
+      const likesBeforeIncrementation = blogs[0].likes
+      const response = await api
+        .put(`/api/blogs/${blogs[0].id}`)
+        .send( { likes: (blogs[0].likes + likesToBeAdded) } )
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      expect(response.body.likes)
+        .toBe(likesBeforeIncrementation + likesToBeAdded)
     })
 
   })
