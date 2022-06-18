@@ -36,7 +36,7 @@ blogsRouter.delete('/:id', async (request, response) => {
   if (!blog) {
     return response.status(400).json({ 'error': 'blog not found, malformatted id' })
   }
-  if ( request.user.id && blog.user && (blog.user.toString() === request.user.id.toString()) ) {
+  if ( request.user && request.user.id && blog.user && (blog.user.toString() === request.user.id.toString()) ) {
     await Blog.findByIdAndRemove(request.params.id)
     response.status(204).end()
   }

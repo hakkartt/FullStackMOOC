@@ -8,17 +8,23 @@ const helper = require('./test_helper')
 
 const api = supertest(app)
 
-describe('save some initial notes to DB', () => {
+let token
 
-  beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
-    await User.deleteMany({})
-    const saltRounds = 10
-    const passwordHash = await bcrypt.hash('salainen', saltRounds)
-    const user = new User({ username: 'root', passwordHash })
-    await user.save()
-  })
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
+  await User.deleteMany({})
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash('salainen', saltRounds)
+  const user = new User({ username: 'root', passwordHash })
+  await user.save()
+  const response = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'salainen' })
+  token = response.body.token
+})
+
+describe('save some initial notes to DB', () => {
 
   describe('test GET requests', () => {
 
@@ -48,6 +54,27 @@ describe('save some initial notes to DB', () => {
 
   describe('test POST requests', () => {
 
+    test('adding new blog without token leads to status 401 Unauthorized', async () => {
+      const users = await helper.usersInDb()
+      const newBlog = {
+        title: 'Foo Foo or Bar Bar',
+        author: 'Foo Bar',
+        url: 'http://foo.bar/foo/bar',
+        userId: `${users[0].id}`,
+        likes: 100
+      }
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+      const blogsAfterPost = await helper.blogsInDb()
+      expect(blogsAfterPost)
+        .toHaveLength(helper.initialBlogs.length)
+      expect(blogsAfterPost.map(blog => blog.title)).not.toContain(
+        'Foo Foo or Bar Bar'
+      )
+    })
+
     test('a new valid blog can be added', async () => {
       const users = await helper.usersInDb()
       const newBlog = {
@@ -59,6 +86,7 @@ describe('save some initial notes to DB', () => {
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `bearer ${token}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -80,6 +108,7 @@ describe('save some initial notes to DB', () => {
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `bearer ${token}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -100,6 +129,7 @@ describe('save some initial notes to DB', () => {
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `bearer ${token}` })
         .send(newBlog)
         .expect(400)
       const blogsAfterPost = await helper.blogsInDb()
@@ -117,6 +147,7 @@ describe('save some initial notes to DB', () => {
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `bearer ${token}` })
         .send(newBlog)
         .expect(400)
       const blogsAfterPost = await helper.blogsInDb()
@@ -129,24 +160,38 @@ describe('save some initial notes to DB', () => {
   describe('test DELETE requests', () => {
 
     test('request with valid "id" leads to status code 204', async () => {
-      const blogsBeforeDelete = await helper.blogsInDb()
+      const response = await api
+        .post('/api/blogs')
+        .set({ Authorization: `bearer ${token}` })
+        .send({
+          title: 'test',
+          author: 'root',
+          url: 'http://test.fi',
+          likes: 100
+        })
+        .expect(201)
+      const before = await helper.blogsInDb()
+      expect(before).toHaveLength(helper.initialBlogs.length + 1)
+      expect(before.map(blog => blog.title)).toContain('test')
       await api
-        .delete(`/api/blogs/${blogsBeforeDelete[0].id}`)
+        .delete(`/api/blogs/${response._body.id}`)
+        .set({ Authorization: `bearer ${token}` })
         .expect(204)
-      const blogsAfterDelete = await helper.blogsInDb()
-      expect(blogsAfterDelete)
-        .toHaveLength(blogsBeforeDelete.length - 1)
+      const after = await helper.blogsInDb()
+      expect(after)
+        .toHaveLength(before.length - 1)
+      expect(after.map(blog => blog.title)).not.toContain('test')
     })
 
     test('request with non-existing "id" leads to status code 400', async () => {
-      const blogsBeforeDelete = await helper.blogsInDb()
+      const before = await helper.blogsInDb()
       const id = await helper.nonExistingId()
       await api
         .delete(`/api/blogs/${id}`)
-        .expect(204)
-      const blogsAfterDelete = await helper.blogsInDb()
-      expect(blogsAfterDelete)
-        .toHaveLength(blogsBeforeDelete.length)
+        .expect(400)
+      const after = await helper.blogsInDb()
+      expect(after)
+        .toHaveLength(before.length)
     })
 
   })
@@ -171,14 +216,6 @@ describe('save some initial notes to DB', () => {
 })
 
 describe('after one user is created in DB', () => {
-
-  beforeEach(async () => {
-    await User.deleteMany({})
-    const saltRounds = 10
-    const passwordHash = await bcrypt.hash('salainen', saltRounds)
-    const user = new User({ username: 'root', passwordHash })
-    await user.save()
-  })
 
   test('create user successfully', async () => {
     const before = await helper.usersInDb()
