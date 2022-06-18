@@ -13,6 +13,11 @@ describe('save some initial notes to DB', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(helper.initialBlogs)
+    await User.deleteMany({})
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash('salainen', saltRounds)
+    const user = new User({ username: 'root', passwordHash })
+    await user.save()
   })
 
   describe('test GET requests', () => {
@@ -44,10 +49,12 @@ describe('save some initial notes to DB', () => {
   describe('test POST requests', () => {
 
     test('a new valid blog can be added', async () => {
+      const users = await helper.usersInDb()
       const newBlog = {
         title: 'Foo Foo or Bar Bar',
         author: 'Foo Bar',
         url: 'http://foo.bar/foo/bar',
+        userId: `${users[0].id}`,
         likes: 100
       }
       await api
@@ -64,10 +71,12 @@ describe('save some initial notes to DB', () => {
     })
 
     test('a new blog without field "likes" is accepted and "likes" field is set as 0', async () => {
+      const users = await helper.usersInDb()
       const newBlog = {
         title: 'Foo Foo or Bar Bar',
         author: 'Foo Bar',
-        url: 'http://foo.bar/foo/bar'
+        url: 'http://foo.bar/foo/bar',
+        userId: `${users[0].id}`
       }
       await api
         .post('/api/blogs')
@@ -82,9 +91,11 @@ describe('save some initial notes to DB', () => {
     })
 
     test('a new blog without field "title" is NOT accepted', async () => {
+      const users = await helper.usersInDb()
       const newBlog = {
         author: 'Foo Bar',
         url: 'http://foo.bar/foo/bar',
+        userId: `${users[0].id}`,
         likes: 100
       }
       await api
@@ -97,9 +108,11 @@ describe('save some initial notes to DB', () => {
     })
 
     test('a new blog without field "url" is NOT accepted', async () => {
+      const users = await helper.usersInDb()
       const newBlog = {
         title: 'Foo Foo or Bar Bar',
         author: 'Foo Bar',
+        userId: `${users[0].id}`,
         likes: 100
       }
       await api
