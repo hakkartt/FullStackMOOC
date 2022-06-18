@@ -1,4 +1,4 @@
-DELETE http://localhost:3003/api/blogs/62ae11574f62475dac99b631
+DELETE http://localhost:3003/api/blogs/62ae1a933bed5fa4162142aa
 // add token after "bearer " below
 // get token by sending request via login.rest
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZvbyIsImlkIjoiNjJhZTBlZTEzMWNlNWIzMzczZGUyNGE4IiwiaWF0IjoxNjU1NTc2NjA2LCJleHAiOjE2NTU1ODAyMDZ9.FYi6wCS4ETVFY-1EL-i-fALTfMhIE0WnLu8ioSLQNUg
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZvbyIsImlkIjoiNjJhZTBlZTEzMWNlNWIzMzczZGUyNGE4IiwiaWF0IjoxNjU1NTc3MTgzLCJleHAiOjE2NTU1ODA3ODN9.Cex7I4iERT2flm2w-EbDPCxARD8ixzXju7FaXrcDHqU
