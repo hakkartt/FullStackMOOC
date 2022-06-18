@@ -10,6 +10,16 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
+  const users = await User.find({})
+  const duplicate = users.find(x => x.username === username)
+  console.log(duplicate)
+  if (password === undefined || username === undefined ||
+    password.length < 3 || username.length < 3 || duplicate) {
+    return response.status(400).json({
+      error: 'Username and password required (at least 3 char'+
+      ' long). Furthermore,  username must be unique!'
+    })
+  }
   //   const existingUser = await User.findOne({ username })
   //   if (existingUser) {
   //     return response.status(400).json({

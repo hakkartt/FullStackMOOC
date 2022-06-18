@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 const api = supertest(app)
@@ -151,6 +153,115 @@ describe('save some initial notes to DB', () => {
         .toBe(likesBeforeIncrementation + likesToBeAdded)
     })
 
+  })
+
+})
+
+describe('after one user is created in DB', () => {
+
+  beforeEach(async () => {
+    await User.deleteMany({})
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash('salainen', saltRounds)
+    const user = new User({ username: 'root', passwordHash })
+    await user.save()
+  })
+
+  test('create user successfully', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      username: 'foo',
+      name: 'bar',
+      password: 'foobar'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length + 1)
+    const usernames = after.map(user => user.username)
+    expect(usernames).toContain(toBeCreated.username)
+  })
+
+  test('creating user with nonunique username fails', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      username: 'root',
+      password: 'foobar'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length)
+  })
+
+  test('creating user without username fails', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      password: 'foobar'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length)
+  })
+
+  test('creating user with too short username fails', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      username: 'fo',
+      password: 'foobar'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length)
+    const usernames = after.map(user => user.username)
+    expect(usernames).not.toContain(toBeCreated.username)
+  })
+
+  test('creating user without password fails', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      username: 'foobar'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length)
+    const usernames = after.map(user => user.username)
+    expect(usernames).not.toContain(toBeCreated.username)
+  })
+
+  test('creating user with too short password fails', async () => {
+    const before = await helper.usersInDb()
+    const toBeCreated = {
+      username: 'foobar',
+      password: 'ba'
+    }
+    await api
+      .post('/api/users')
+      .send(toBeCreated)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    const after = await helper.usersInDb()
+    expect(after).toHaveLength(before.length)
+    const usernames = after.map(user => user.username)
+    expect(usernames).not.toContain(toBeCreated.username)
   })
 
 })
