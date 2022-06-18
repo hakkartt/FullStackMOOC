@@ -1,10 +1,13 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+// add token after "bearer " below
+// get token by sending request via login.rest
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZvbyIsImlkIjoiNjJhZTBlZTEzMWNlNWIzMzczZGUyNGE4IiwiaWF0IjoxNjU1NTc0NzA5LCJleHAiOjE2NTU1NzgzMDl9.HivDjhw1Zy9Z3Z4nsUyBPXP21gP1XXYCM0kSdtcNk0g
 
 {
-  "title": "Foo",
-  "author": "Bar",
-  "url": "foo.foobar.bar",
-  "userId": "62ac72a84a871b243e1fe76b",
+  "title": "Moimoi",
+  "author": "foo bar",
+  "url": "foobar.org",
+  "userId": "62ae0ee131ce5b3373de24a8",
   "likes": 0
 }
