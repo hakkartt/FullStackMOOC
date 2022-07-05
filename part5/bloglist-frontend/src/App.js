@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import Form from './components/Form'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -9,6 +10,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -21,6 +25,7 @@ const App = () => {
     if(loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -43,6 +48,7 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogAppUser', JSON.stringify(user)
       )
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -53,9 +59,40 @@ const App = () => {
 
   const handleLogout = () => {
     console.log(`Logged out ${user.username}`)
-    window.localStorage.clear()
+    window.localStorage.removeItem('loggedBlogAppUser')
+    setUser(null)
   }
 
+  const handleNewBlog =  async(event) => {
+    event.preventDefault()
+    const likes = 0
+    try {
+        await blogService.create({
+        title, author, url, likes
+      })
+    } catch(exception) {
+      console.log(exception)
+    }
+
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+    )
+  }
+
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value)
+  }
+
+  const handleAuthorChange = (event) => {
+    setAuthor(event.target.value)
+  }
+
+  const handleUrlChange = (event) => {
+    setUrl(event.target.value)
+  }
 
   return (
     <div>
@@ -73,6 +110,15 @@ const App = () => {
             <div>{user.name} logged in
             <button onClick={() => handleLogout()}>logout</button>
             </div>
+            <Form
+              handleNewBlog={handleNewBlog}
+              handleTitleChange={handleTitleChange}
+              handleAuthorChange={handleAuthorChange}
+              handleUrlChange={handleUrlChange}
+              title={title}
+              author={author}
+              url={url}
+            />
             <br/>
             <div>
             {blogs.map(blog =>
