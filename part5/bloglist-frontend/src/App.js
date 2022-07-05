@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import Form from './components/Form'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -13,6 +14,8 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [msg, setMsg] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -39,7 +42,6 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
 
     try {
       const user = await loginService.login({
@@ -52,34 +54,54 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setMsg(`Logged in ${user.username}`)
+      setTimeout(() => {
+        setMsg(null)
+      }, 5000)
     } catch (exception){
       console.log(exception)
+      setErrorMsg('Invalid username or password')
+      setTimeout(() => {
+        setErrorMsg(null)
+      }, 5000)
     }
   }
 
   const handleLogout = () => {
-    console.log(`Logged out ${user.username}`)
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
+    setMsg(
+      `Logged out ${user.username}`
+    )
+    setTimeout(() => {
+      setMsg(null)
+    }, 5000)
   }
 
   const handleNewBlog =  async(event) => {
     event.preventDefault()
     const likes = 0
     try {
-        await blogService.create({
+      await blogService.create({
         title, author, url, likes
       })
-    } catch(exception) {
-      console.log(exception)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      blogService.getAll().then(blogs =>
+        setBlogs( blogs )
+      )
+      setMsg(`A new blog ${title} by ${author} added`)
+      setTimeout(() => {
+        setMsg(null)
+      }, 5000)
+    } catch(error) {
+      console.log(error)
+      setErrorMsg('Invalid data for the blog to be created.')
+      setTimeout(() => {
+        setErrorMsg(null)
+      }, 5000)
     }
-
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
   }
 
   const handleTitleChange = (event) => {
@@ -97,16 +119,22 @@ const App = () => {
   return (
     <div>
       {user === null ?
-      <LoginForm
-        handleLogin={handleLogin}
-        handleUsernameChange={handleUsernameChange}
-        handlePasswordChange={handlePasswordChange}
-        username={username}
-        password={password}
-        /> :
-      <div>
-        <h2>blogs</h2>
+        <div>
+        <Notification.Success message={msg}/>
+        <Notification.Error message={errorMsg}/>
+        <LoginForm
+          handleLogin={handleLogin}
+          handleUsernameChange={handleUsernameChange}
+          handlePasswordChange={handlePasswordChange}
+          username={username}
+          password={password}
+          />
+        </div> :
+        <div>
+          <h2>blogs</h2>
           <div>
+            <Notification.Success message={msg}/>
+            <Notification.Error message={errorMsg}/>
             <div>{user.name} logged in
             <button onClick={() => handleLogout()}>logout</button>
             </div>
@@ -126,10 +154,10 @@ const App = () => {
             )}
             </div>
           </div>
-      </div>
+        </div>
       }
     </div>
   )
 }
 
-export default App 
+export default App
