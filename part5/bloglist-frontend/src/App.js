@@ -88,6 +88,18 @@ const App = () => {
     }
   }
 
+  const addLikes = async (blogObject) => {
+    blogObject.likes += 1
+    const returnedBlog = await blogService.update(blogObject.id, blogObject)
+    setBlogs(
+      blogs.map(
+        blog => blog.id === blogObject.id
+          ? returnedBlog
+          : blog
+      )
+    )
+  }
+
   return (
     <div>
       {user === null ?
@@ -105,10 +117,9 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <div>
-            <Notification.Success message={msg}/>
-            <Notification.Error message={errorMsg}/>
-            <div>{user.name} logged in
-              <button onClick={() => handleLogout()}>logout</button>
+            <Notification.Success message={msg} />
+            <Notification.Error message={errorMsg} />
+            <div>{user.name} logged in <button onClick={() => handleLogout()}>logout</button>
             </div>
             <br/>
             <div>
@@ -118,7 +129,7 @@ const App = () => {
             </div>
             <div>
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} addLikes={addLikes} />
             )}
             </div>
           </div>
