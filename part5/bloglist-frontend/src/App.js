@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
-import Form from './components/Form'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Toggleable'
 import blogService from './services/blogs'
@@ -70,7 +70,7 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const addBlog = async (blogObject) => {
+  const createBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
       blogService
@@ -116,7 +116,7 @@ const App = () => {
             <br/>
             <div>
               <Togglable buttonLabel='new blog' ref={blogFormRef}>
-                <Form createBlog={addBlog}/>
+                <BlogForm createBlog={createBlog}/>
               </Togglable>
             </div>
             <div>
