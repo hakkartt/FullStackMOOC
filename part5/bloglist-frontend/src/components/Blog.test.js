@@ -4,8 +4,11 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-describe('renders correct content', () => {
+describe('renders content', () => {
+
   let container
+  const addLikesMock = jest.fn()
+  const deleteBlogMock = jest.fn()
 
   beforeEach(() => {
     const blog = {
@@ -14,8 +17,6 @@ describe('renders correct content', () => {
       url: 'testurl',
       likes: 0
     }
-    const addLikesMock = jest.fn()
-    const deleteBlogMock = jest.fn()
     const user = {
       username: 'testuser'
     }
@@ -31,13 +32,22 @@ describe('renders correct content', () => {
 
   test('After click on button, render also url and likes', async () => {
     const user = userEvent.setup()
-    const button =screen.getByText('view')
+    const button = screen.getByText('view')
     await user.click(button)
     expect(container.querySelector('.defaultContent')).toHaveStyle('display: none')
     expect(container.querySelector('.togglableContent')).toHaveTextContent('testtitle')
     expect(container.querySelector('.togglableContent')).toHaveTextContent('url: testurl')
     expect(container.querySelector('.togglableContent')).toHaveTextContent('likes: 0')
     expect(container.querySelector('.togglableContent')).toHaveTextContent('author: testauthor')
+  })
+
+  test('Clicking like button twice results in two requests to event handler function of the component', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('like')
+    await user.click(button)
+    expect(addLikesMock.mock.calls).toHaveLength(1)
+    await user.click(button)
+    expect(addLikesMock.mock.calls).toHaveLength(2)
   })
 
 })
