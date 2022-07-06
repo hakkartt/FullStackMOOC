@@ -73,15 +73,12 @@ const App = () => {
   const createBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
-      blogService
-        .create(blogObject)
-        .then(returnedBlog => {
-          setBlogs(blogs.concat(returnedBlog))
-          setMsg(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-          setTimeout(() => {
-            setMsg(null)
-          }, 5000)
-        })
+      const returnedBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(returnedBlog))
+      setMsg(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+      setTimeout(() => {
+        setMsg(null)
+      }, 5000)
     } catch(error) {
       console.log(error)
       setErrorMsg('Invalid data for the blog to be created.')
