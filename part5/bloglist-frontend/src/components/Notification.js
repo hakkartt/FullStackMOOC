@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Success = ({ message }) => {
   if(!message) { return null }
@@ -16,6 +17,14 @@ const Error = ({ message }) => {
       {message}
     </div>
   )
+}
+
+Success.propTypes = {
+  message: PropTypes.string.isRequired
+}
+
+Error.propTypes = {
+  message: PropTypes.string.isRequired
 }
 
 export default { Success, Error }
