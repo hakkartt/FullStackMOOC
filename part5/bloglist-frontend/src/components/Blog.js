@@ -5,8 +5,8 @@ const Blog = ({ blog, addLikes, deleteBlog, user }) => {
 
   const [visible, setVisibility] = useState(false)
 
-  const hideWhenVisible = { display : visible ? 'none' : ''}
-  const showWhenVisible = { display : visible ? '' : 'none'}
+  const hideWhenVisible = { display : visible ? 'none' : '' }
+  const showWhenVisible = { display : visible ? '' : 'none' }
 
   const blogStyle = {
     paddingTop: 10,

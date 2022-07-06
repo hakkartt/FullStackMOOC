@@ -115,14 +115,14 @@ const App = () => {
     <div>
       {user === null ?
         <div>
-        <Notification.Success message={msg}/>
-        <Notification.Error message={errorMsg}/>
-        <LoginForm
-          handleLogin={handleLogin}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          username={username}
-          password={password}
+          <Notification.Success message={msg}/>
+          <Notification.Error message={errorMsg}/>
+          <LoginForm
+            handleLogin={handleLogin}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            username={username}
+            password={password}
           />
         </div> :
         <div>
@@ -139,19 +139,19 @@ const App = () => {
               </Togglable>
             </div>
             <div>
-            {
-            blogs
-              .sort((x, y) => y.likes - x.likes)
-              .map(blog => 
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  addLikes={addLikes}
-                  deleteBlog={deleteBlog}
-                  user={user}
-                />
-              )
-            }
+              {
+                blogs
+                  .sort((x, y) => y.likes - x.likes)
+                  .map(blog =>
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      addLikes={addLikes}
+                      deleteBlog={deleteBlog}
+                      user={user}
+                    />
+                  )
+              }
             </div>
           </div>
         </div>
