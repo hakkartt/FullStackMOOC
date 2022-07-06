@@ -19,7 +19,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )
-  }, [])
+  }, [blogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -100,6 +100,17 @@ const App = () => {
     )
   }
 
+  const deleteBlog = async (blogObject) => {
+    if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
+      await blogService.remove(blogObject.id)
+      setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
+      setMsg(`Deleted ${blogObject.title} by ${blogObject.author}`)
+      setTimeout(() => {
+        setMsg(null)
+      }, 5000)
+    }
+  }
+
   return (
     <div>
       {user === null ?
@@ -124,14 +135,22 @@ const App = () => {
             <br/>
             <div>
               <Togglable buttonLabel='new blog' ref={blogFormRef}>
-                <BlogForm createBlog={createBlog}/>
+                <BlogForm createBlog={createBlog} user={user}/>
               </Togglable>
             </div>
             <div>
             {
             blogs
               .sort((x, y) => y.likes - x.likes)
-              .map(blog => <Blog key={blog.id} blog={blog} addLikes={addLikes} />)
+              .map(blog => 
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  addLikes={addLikes}
+                  deleteBlog={deleteBlog}
+                  user={user}
+                />
+              )
             }
             </div>
           </div>
