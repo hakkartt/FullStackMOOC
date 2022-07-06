@@ -8,21 +8,17 @@ describe('renders correct content', () => {
   let container
 
   beforeEach(() => {
-
     const blog = {
       title: 'testtitle',
       author: 'testauthor',
       url: 'testurl',
       likes: 0
     }
-
     const addLikesMock = jest.fn()
     const deleteBlogMock = jest.fn()
-
     const user = {
       username: 'testuser'
     }
-
     container = render(
       <Blog blog={blog} addLikes={addLikesMock} deleteBlog={deleteBlogMock} user={user} />
     ).container
