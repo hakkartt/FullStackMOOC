@@ -126,7 +126,8 @@ const App = () => {
           />
         </div> :
         <div>
-          <h2>blogs</h2>
+          <h2>Bloglist app</h2>
+          <p>This is an app to create blog entries and delete them. Additionally one can give likes to other blogs.</p>
           <div>
             <Notification.Success message={msg} />
             <Notification.Error message={errorMsg} />
@@ -153,6 +154,11 @@ const App = () => {
                   )
               }
             </div>
+            <h2>NB:</h2>
+            <ul>
+              <li>Please note that if you want to remove blogs from the list, you need to be logged in with a user that created the blog entry in the first place.</li>
+              <li><b>If the remove button disappears after clicking the like button or does not appear immedeately after creating a new log entry, please refresh the page.</b> This is is a known bug in the implementation and is not fixed since this is only a practice application.</li>
+            </ul>
           </div>
         </div>
       }

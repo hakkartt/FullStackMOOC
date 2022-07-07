@@ -97,7 +97,6 @@ describe('Blog app', function() {
         cy.request('POST', 'http://localhost:3003/api/users/', anotheruser)
         cy.visit('http://localhost:3000')
         cy.login({ username: 'anotherusername', password: 'anotherpassword' })
-
         cy.contains('title1 by author1')
           .contains('view')
           .click()
@@ -110,6 +109,43 @@ describe('Blog app', function() {
           .click()
         cy.contains('url2')
           .should('not.contain', 'remove')
+      })
+
+      it.only('Blogs are sorted in bloglist based on how many likes they have', function() {
+        cy.createBlog({ title: 'title3', author: 'author3', url: 'url3', likes: 0 })
+        cy.visit('http://localhost:3000')
+        cy.get('.defaultContent')
+          .should('have.length', 3)
+          .then(($div) => {
+            cy.wrap($div[0]).should('contain', 'title1')
+            cy.wrap($div[1]).should('contain', 'title2')
+            cy.wrap($div[2]).should('contain', 'title3')
+          })
+
+        cy.contains('title2').contains('view').click()
+        cy.contains('url2').contains('like').click()
+        cy.contains('url2').contains('hide').click()
+        cy.wait(200)
+        cy.get('.defaultContent')
+          .should('have.length', 3)
+          .then(($div) => {
+            cy.wrap($div[0]).should('contain', 'title2')
+            cy.wrap($div[1]).should('contain', 'title1')
+            cy.wrap($div[2]).should('contain', 'title3')
+          })
+
+        cy.contains('title3').contains('view').click()
+        cy.contains('url3').contains('like').click()
+        cy.wait(200)
+        cy.contains('url3').contains('like').click()
+        cy.contains('url3').contains('hide').click()
+        cy.get('.defaultContent')
+          .should('have.length', 3)
+          .then(($div) => {
+            cy.wrap($div[0]).should('contain', 'title3')
+            cy.wrap($div[1]).should('contain', 'title2')
+            cy.wrap($div[2]).should('contain', 'title1')
+          })
       })
     })
   })
