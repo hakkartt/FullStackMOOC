@@ -74,8 +74,43 @@ describe('Blog app', function() {
           .contains('likes: 1')
           .contains('hide')
       })
+
+      it('A blog can be deleted by a user that has created the blog', function() {
+        cy.contains('title2 by author2')
+          .contains('view')
+          .click()
+        cy.contains('url2')
+          .contains('remove')
+          .click()
+        cy.on('window.confirm', () => true)
+        cy.get('html')
+          .should('contain', 'Deleted title2 from bloglist')
+          .should('not.contain', 'title2 by author2')
+      })
+
+      it('A blog can NOT be deleted by a user that has NOT created the blog', function() {
+        const anotheruser = {
+          user: 'anotheruser',
+          password: 'anotherpassword',
+          username: 'anotherusername'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', anotheruser)
+        cy.visit('http://localhost:3000')
+        cy.login({ username: 'anotherusername', password: 'anotherpassword' })
+
+        cy.contains('title1 by author1')
+          .contains('view')
+          .click()
+        cy.contains('url1')
+          .should('not.contain', 'remove')
+          .contains('hide')
+          .click()
+        cy.contains('title2 by author2')
+          .contains('view')
+          .click()
+        cy.contains('url2')
+          .should('not.contain', 'remove')
+      })
     })
-
   })
-
 })

@@ -104,7 +104,7 @@ const App = () => {
     if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
       await blogService.remove(blogObject.id)
       setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
-      setMsg(`Deleted ${blogObject.title} by ${blogObject.author}`)
+      setMsg(`Deleted ${blogObject.title} from bloglist`)
       setTimeout(() => {
         setMsg(null)
       }, 5000)
