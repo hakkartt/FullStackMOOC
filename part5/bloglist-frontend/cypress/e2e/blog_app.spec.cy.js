@@ -40,9 +40,7 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.get('#username').type('testusername')
-      cy.get('#password').type('testpassword')
-      cy.get('#loginButton').click()
+      cy.login({ username: 'testusername', password: 'testpassword' })
     })
 
     it('A blog can be created', function() {
@@ -54,8 +52,30 @@ describe('Blog app', function() {
       cy.get('html')
         .should('contain', 'A new blog testtitle by author named testauthor added')
       cy.contains('testtitle by testauthor')
-      cy.get('#viewButton')
+        .get('#viewButton')
+        .contains('view')
     })
+
+    describe('When multiple blogs have been created', function() {
+      beforeEach(function() {
+        cy.createBlog({ title: 'title1', author: 'author1', url: 'url1', likes: 0 })
+        cy.createBlog({ title: 'title2', author: 'author2', url: 'url2', likes: 0 })
+      })
+
+      it('A blog can be liked', function() {
+        cy.contains('title2 by author2')
+          .contains('view')
+          .click()
+        cy.contains('url: url2')
+          .contains('likes: 0')
+          .contains('like')
+          .click()
+        cy.contains('url: url2')
+          .contains('likes: 1')
+          .contains('hide')
+      })
+    })
+
   })
 
 })
