@@ -30,13 +30,13 @@ const anecdoteSlice = createSlice({
     },
     vote(state, action) {
       const id = action.payload
-      const toBeUpdated = state.find(anecdote => anecdote.id === id)
+      const toBeUpdated = state.find(i => i.id === id)
       const updated = {
         ...toBeUpdated,
         votes: toBeUpdated.votes + 1
       }
-      return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : updated
+      return state.map(
+          i => i.id !== id ? i : updated
         ).sort((i, j) => j.votes - i.votes)
     }
   }

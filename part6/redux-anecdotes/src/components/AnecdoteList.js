@@ -4,11 +4,13 @@ import { pop, vanish } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
     const anecdotes = useSelector(state => state.anecdotes)
+    const searchString = useSelector(state => state.filter).toLowerCase()
     const dispatch = useDispatch()
 
     const voteAndNotify = (id) => {
         dispatch(vote(id))
-        const anecdote = anecdotes.find(n => n.id === id)
+        const anecdote = anecdotes.find(i => i.id === id)
+        dispatch(vanish())
         dispatch(pop(`you voted '${anecdote.content}'`))
         setTimeout(() => {
           dispatch(vanish())
@@ -18,17 +20,23 @@ const AnecdoteList = () => {
     return (
         <div>
             {
-            anecdotes.map(anecdote =>
-                <div key={anecdote.id}>
-                    <div>
-                    {anecdote.content}
-                    </div>
-                    <div>
-                    has {anecdote.votes}
-                    <button onClick={() => dispatch(voteAndNotify(anecdote.id))}>vote</button>
-                    </div>
-                </div>
-                )
+                anecdotes
+                    .filter(
+                        i => 
+                        i.content.toLowerCase().includes(searchString)
+                    )
+                    .map(
+                        i =>
+                        <div key={i.id}>
+                            <div>
+                            {i.content}
+                            </div>
+                            <div>
+                            has {i.votes}
+                            <button onClick={() => voteAndNotify(i.id)}>vote</button>
+                            </div>
+                        </div>
+                    )
             }
         </div>
     )
