@@ -6,11 +6,17 @@ const Notification = () => {
     padding: 10,
     borderWidth: 1
   }
-  return (
-    <div style={style}>
-      {useSelector(state => state.notification)}
-    </div>
-  )
+  
+  const notificationMsg = useSelector(state => state.notification)
+  if (notificationMsg) {
+    return (
+      <div style={style}>
+        {notificationMsg}
+      </div>
+    )
+  } else {
+    return <></>
+  }
 }
 
 export default Notification
