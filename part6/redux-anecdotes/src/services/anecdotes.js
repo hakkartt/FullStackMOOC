@@ -13,6 +13,17 @@ const createAnecdote = async (content) => {
   return response.data
 }
 
-const TBE = { getAllAnecdotes, createAnecdote }
+const incrementVotes = async (id) => {
+  const anecdote = await axios.get(`${baseUrl}/${id}`)
+  const tbc = anecdote.data
+  const updated = {
+    ...tbc,
+    votes: tbc.votes + 1
+  }
+  const response = await axios.put(`${baseUrl}/${id}`, updated)
+  return response.data
+}
+
+const TBE = { getAllAnecdotes, createAnecdote, incrementVotes }
 
 export default TBE
