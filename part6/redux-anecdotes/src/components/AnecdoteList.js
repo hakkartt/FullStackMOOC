@@ -7,9 +7,9 @@ const AnecdoteList = () => {
     const searchString = useSelector(state => state.filter).toLowerCase()
     const dispatch = useDispatch()
 
-    const voteAndNotify = (id) => {
-        dispatch(voteAnecdote(id))
-        const anecdote = anecdotes.find(i => i.id === id)
+    const voteAndNotify = (anecdote) => {
+        dispatch(voteAnecdote(anecdote.id))
+        // const anecdote = anecdotes.find(i => i.id === id)
         dispatch(notify(`you voted \'${anecdote.content}\'`, 10))
       }
 
@@ -29,7 +29,7 @@ const AnecdoteList = () => {
                             </div>
                             <div>
                             has {i.votes}
-                            <button onClick={() => voteAndNotify(i.id)}>vote</button>
+                            <button onClick={() => voteAndNotify(i)}>vote</button>
                             </div>
                         </div>
                     )
