@@ -1,22 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const initialState = null
-
 const notificationSlice = createSlice({
   name: 'notification',
-  initialState,
+  initialState: [ null, null ],
   reducers: {
-    pop(state, action) { return action.payload },
-    vanish(state, action) { return null }
+    pop(state, action) { 
+      // https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout
+      clearTimeout(state[1])
+      return [ action.payload.notificationmessage, action.payload.timeoutID ]
+    },
+    vanish(state, action) { return [ null, state[1] ] }
   }
 })
 
 export const notify = (notificationmessage, showtimeinseconds) => {
   return dispatch => {
-    dispatch(pop(notificationmessage))
-    setTimeout(() => {
+    const timeoutID = setTimeout(() => {
       dispatch(vanish())
-    }, 1000*showtimeinseconds)
+    }, showtimeinseconds * 1000)
+    dispatch(pop({ notificationmessage, timeoutID }))
   }
 }
 

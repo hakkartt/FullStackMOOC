@@ -6,10 +6,10 @@ const Notification = (props) => {
     padding: 10,
     borderWidth: 1
   }
-  if (props.notification) {
+  if (props.notification[0]) {
     return (
       <div style={style}>
-        {props.notification}
+        {props.notification[0]}
       </div>
     )
   } else return ( <div /> )
